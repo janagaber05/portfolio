@@ -4,7 +4,7 @@ import './ProjectsGrid.css';
 
 const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
 const FITUP_RESEARCH_PDF = `${publicUrl}/grad-project/FitUp_Expanded_Research-2.pdf`;
-const FITUP_BRAND_MANUAL_DOCX = `${publicUrl}/grad-project/FitUp_Brand_Manual.docx`;
+const FITUP_BRAND_MANUAL_PDF = `${publicUrl}/grad-project/FitUp_Brand_Manual.pdf`;
 
 const STAGES = {
   research: {
@@ -225,13 +225,13 @@ export default function ProjectStagePage({ lang = 'en', stageId }) {
                     {isAr ? 'FitUp — دليل الهوية والبراند' : 'FitUp — brand manual & visual identity'}
                   </h2>
                   <p className="stage-document-card__meta">
-                    {isAr ? 'مستند Word · مشروع التخرج' : 'Word document · Grad project deliverable'}
+                    {isAr ? 'مستند PDF · مشروع التخرج' : 'PDF document · Grad project deliverable'}
                   </p>
                 </div>
                 <div className="stage-document-card__actions">
                   <a
                     className="stage-doc-btn"
-                    href={FITUP_BRAND_MANUAL_DOCX}
+                    href={FITUP_BRAND_MANUAL_PDF}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -239,34 +239,28 @@ export default function ProjectStagePage({ lang = 'en', stageId }) {
                   </a>
                   <a
                     className="stage-doc-btn stage-doc-btn--primary"
-                    href={FITUP_BRAND_MANUAL_DOCX}
-                    download="FitUp_Brand_Manual.docx"
+                    href={FITUP_BRAND_MANUAL_PDF}
+                    download="FitUp_Brand_Manual.pdf"
                   >
                     {isAr ? 'تنزيل' : 'Download'}
                   </a>
                 </div>
               </div>
-              <div className="stage-docx-panel">
-                <div className="stage-docx-panel__badge" aria-hidden="true">
-                  <span className="stage-docx-panel__ext">DOCX</span>
-                </div>
-                <div className="stage-docx-panel__copy">
-                  <p className="stage-docx-panel__lead">
-                    {isAr
-                      ? 'دليل كامل للهوية البصرية: الشعار، الألوان، الخطوط، وقواعد الاستخدام—جاهز للتحرير في Word.'
-                      : 'Full brand guidelines—logo, colour, typography, and usage rules—in an editable Word deliverable.'}
-                  </p>
-                  <p className="stage-docx-panel__note">
-                    {isAr
-                      ? 'ملفات Word تعمل بشكل أفضل بعد التنزيل (Microsoft Word أو Pages أو Google Docs).'
-                      : 'Word files work best after download (Microsoft Word, Pages, or Google Docs).'}
-                  </p>
-                </div>
+              <div className="stage-document-card__viewer">
+                <iframe
+                  className="stage-pdf-iframe"
+                  title={
+                    isAr
+                      ? 'معاينة FitUp — دليل الهوية والبراند'
+                      : 'FitUp brand manual PDF preview'
+                  }
+                  src={FITUP_BRAND_MANUAL_PDF}
+                />
               </div>
-              <p className="stage-pdf-hint stage-pdf-hint--docx">
+              <p className="stage-pdf-hint">
                 {isAr
-                  ? 'المتصفحات لا تعرض ملفات Word داخل الصفحة؛ استخدمي «فتح» أو «تنزيل» أعلاه.'
-                  : 'Browsers do not preview Word inside the page—use Open or Download above.'}
+                  ? 'إذا لم تظهر المعاينة، استخدمي «فتح في نافذة جديدة» أو «تنزيل».'
+                  : 'If the preview does not load, use Open or Download—some browsers limit inline PDFs.'}
               </p>
             </div>
           </section>
