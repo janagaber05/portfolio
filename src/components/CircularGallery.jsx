@@ -114,7 +114,6 @@ class Media {
     app,
     originalIndex
   }) {
-    this.extra = 0;
     this.geometry = geometry;
     this.gl = gl;
     this.image = image;
@@ -170,7 +169,7 @@ class Media {
         void main() {
           vUv = uv;
           vec3 p = position;
-          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
+          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.04 + uSpeed * 0.22);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }
       `,
@@ -268,8 +267,9 @@ class Media {
     });
   }
 
-  update(scroll, direction) {
-    this.plane.position.x = this.x - scroll.current - this.extra;
+  update(scroll, direction, { layoutOnly = false } = {}) {
+    // Shared loop offset on App — wrapping is applied in App.update (one widthTotal step per pass)
+    this.plane.position.x = this.x - scroll.current - this.app.loopExtra;
     const x = this.plane.position.x;
     const H = this.viewport.width / 2;
     
@@ -300,9 +300,6 @@ class Media {
       }
     }
 
-    this.speed = scroll.current - scroll.last;
-    this.program.uniforms.uTime.value += 0.04;
-    this.program.uniforms.uSpeed.value = this.speed;
     this.program.uniforms.uScale.value = scale;
 
     const planeOffset = this.plane.scale.x / 2;
@@ -310,14 +307,10 @@ class Media {
     this.isBefore = this.plane.position.x + planeOffset < -viewportOffset;
     this.isAfter = this.plane.position.x - planeOffset > viewportOffset;
 
-    if (direction === 'right' && this.isBefore) {
-      this.extra -= this.widthTotal;
-      this.isBefore = this.isAfter = false;
-    }
-
-    if (direction === 'left' && this.isAfter) {
-      this.extra += this.widthTotal;
-      this.isBefore = this.isAfter = false;
+    if (!layoutOnly) {
+      this.speed = scroll.current - scroll.last;
+      this.program.uniforms.uTime.value += 0.04;
+      this.program.uniforms.uSpeed.value = this.speed;
     }
   }
 
@@ -350,8 +343,8 @@ class Media {
     const calculatedWidth = baseHeight * imageAspect;
     
     // Ensure it fits within viewport bounds (adjusted for small screens)
-    const maxWidth = this.viewport.width * (isSmallScreen ? 0.5 : 0.35);
-    const maxHeight = this.viewport.height * (isSmallScreen ? 0.75 : 0.6);
+    const maxWidth = this.viewport.width * (isSmallScreen ? 0.48 : 0.3);
+    const maxHeight = this.viewport.height * (isSmallScreen ? 0.72 : 0.55);
     
     if (calculatedWidth > maxWidth) {
       this.baseScaleX = maxWidth;
@@ -368,10 +361,29 @@ class Media {
     this.plane.scale.x = this.baseScaleX;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
 
-    this.padding = 2;
-    this.width = this.plane.scale.x + this.padding;
-    // widthTotal is calculated per media, but should be consistent across all
-    this.widthTotal = this.width * this.length;
+    // Center-to-center stride: account for portrait cards + Z-rotation (coverflow) widening
+    // the axis-aligned footprint, not just baseScaleX.
+    const Hhalf = this.viewport.width * 0.5;
+    const bendAbs = Math.abs(this.bend || 0);
+    let thetaWorst = 0;
+    if (bendAbs > 0.001) {
+      const R = (Hhalf * Hhalf + bendAbs * bendAbs) / (2 * bendAbs);
+      thetaWorst = Math.asin(Math.min(0.999, Hhalf / Math.max(R, 1e-6)));
+    }
+    const sx = this.baseScaleX;
+    const sy = this.baseScaleY;
+    const projectedHalfX =
+      0.5 *
+      (Math.abs(sx * Math.cos(thetaWorst)) + Math.abs(sy * Math.sin(thetaWorst)));
+    const margin = Math.max(sx, sy) * 0.1;
+    this.width = 1.18 * (2 * projectedHalfX + margin);
+
+    const uniqueCount =
+      this.app && this.app.originalItems && this.app.originalItems.length > 0
+        ? this.app.originalItems.length
+        : Math.max(1, Math.floor(this.length / 2));
+    // One full loop of the duplicated strip = uniqueCount strides (not 2× duplicate length)
+    this.widthTotal = this.width * uniqueCount;
     this.x = this.width * this.index;
   }
 }
@@ -393,6 +405,7 @@ class App {
     document.documentElement.classList.remove('no-js');
     this.container = container;
     this.scrollSpeed = scrollSpeed;
+    this.loopExtra = 0;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck, 200);
     this.navigate = navigate;
@@ -402,6 +415,7 @@ class App {
     this.onResize();
     this.createGeometry();
     this.createMedias(items, bend, textColor, borderRadius, font);
+    this.boundUpdate = this.update.bind(this);
     this.update();
     this.addEventListeners();
   }
@@ -462,25 +476,12 @@ class App {
     });
   }
 
-  getIntersection(x, y) {
-    const normalizedX = (x / this.screen.width) * 2 - 1;
-    const normalizedY = -(y / this.screen.height) * 2 + 1;
-    
-    const ray = this.camera.getWorldDirection();
-    const origin = this.camera.position;
-    
+  getIntersection(_x, _y) {
     let closestMedia = null;
     let closestDistance = Infinity;
     
     this.medias.forEach(media => {
       const plane = media.plane;
-      const planeCenter = [
-        plane.position.x,
-        plane.position.y,
-        plane.position.z
-      ];
-      const planeNormal = [0, 0, 1];
-      
       const planeSize = [plane.scale.x, plane.scale.y];
       const distanceFromCenter = Math.sqrt(
         Math.pow(plane.position.x, 2) + 
@@ -507,7 +508,6 @@ class App {
     const relativeY = y - rect.top;
     
     let closestMedia = null;
-    let closestDistance = Infinity;
     const screenCenterX = this.screen.width / 2;
     
     // Find all cards that contain the click point
@@ -677,6 +677,26 @@ class App {
           '/web-design', '/web-design-ar',
           '/3d-design', '/3d-design-ar',
           '/egy-air', '/egy-air-ar',
+          '/grad-project',
+          '/grad-project/research',
+          '/grad-project/branding',
+          '/grad-project/ux-design-system',
+          '/grad-project/prototype',
+          '/grad-project-ar',
+          '/grad-project-ar/research',
+          '/grad-project-ar/branding',
+          '/grad-project-ar/ux-design-system',
+          '/grad-project-ar/prototype',
+          '/projects',
+          '/projects/research',
+          '/projects/branding',
+          '/projects/ux-design-system',
+          '/projects/prototype',
+          '/projects-ar',
+          '/projects-ar/research',
+          '/projects-ar/branding',
+          '/projects-ar/ux-design-system',
+          '/projects-ar/prototype',
           '/designing-with-emotion-how-colors-shape-user-experience-ui-designer-in-cairo',
           '/404', '/404-ar'
         ];
@@ -726,10 +746,17 @@ class App {
     }
     
     this.scroll.target = this.scroll.position + distance;
+
+    if (this.isDragging && e.cancelable && e.type === 'touchmove') {
+      e.preventDefault();
+    }
   }
 
   onTouchUp(e) {
+    const wasDown = this.isDown;
     this.isDown = false;
+    if (!wasDown) return;
+
     if (!this.isDragging) {
       const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
       const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
@@ -740,18 +767,16 @@ class App {
   }
 
   onWheel(e) {
-    // Only respond to horizontal scrolling (deltaX), ignore vertical (deltaY)
     const deltaX = e.deltaX || 0;
-    const deltaY = Math.abs(e.deltaY || 0);
-    
-    // If there's significant horizontal scroll, use it
-    if (Math.abs(deltaX) > deltaY) {
-      this.scroll.target += (deltaX > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.15;
-      this.onCheckDebounce();
-      // Prevent default to stop page scrolling
-      e.preventDefault();
-    }
-    // If it's primarily vertical scroll, do nothing (let page scroll normally)
+    const deltaY = e.deltaY || 0;
+    // Map vertical wheel / trackpad to horizontal carousel motion (most users scroll vertically)
+    const dominant = Math.abs(deltaX) >= Math.abs(deltaY) ? deltaX : -deltaY;
+    if (dominant === 0) return;
+
+    const scale = 0.055 * this.scrollSpeed;
+    this.scroll.target += dominant * scale;
+    this.onCheckDebounce();
+    e.preventDefault();
   }
 
   onCheck() {
@@ -783,12 +808,30 @@ class App {
   update() {
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left';
+    const wtot = this.medias?.[0]?.widthTotal ?? 0;
+
+    // Infinite strip: several cards can be past the edge in one frame (wheel / drag).
+    // Each media used to subtract widthTotal — N times per frame — and everything jumped off-screen.
+    // Apply at most one full period shift per inner pass until all tiles are back in range.
+    if (this.medias && wtot > 0) {
+      let guard = 0;
+      while (guard < 24) {
+        guard += 1;
+        this.medias.forEach(media => media.update(this.scroll, direction, { layoutOnly: true }));
+        const anyBefore = this.medias.some(m => m.isBefore);
+        const anyAfter = this.medias.some(m => m.isAfter);
+        if (!anyBefore && !anyAfter) break;
+        if (anyBefore) this.loopExtra -= wtot;
+        else if (anyAfter) this.loopExtra += wtot;
+      }
+    }
+
     if (this.medias) {
-      this.medias.forEach(media => media.update(this.scroll, direction));
+      this.medias.forEach(media => media.update(this.scroll, direction, { layoutOnly: false }));
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
-    this.raf = window.requestAnimationFrame(this.update.bind(this));
+    this.raf = window.requestAnimationFrame(this.boundUpdate);
   }
 
   addEventListeners() {
@@ -801,30 +844,33 @@ class App {
     this.isDragging = false;
     
     window.addEventListener('resize', this.boundOnResize);
-    window.addEventListener('mousewheel', this.boundOnWheel);
-    window.addEventListener('wheel', this.boundOnWheel);
+    this.container.addEventListener('wheel', this.boundOnWheel, { passive: false });
     this.container.addEventListener('mousedown', this.boundOnTouchDown);
     this.container.addEventListener('mousemove', this.boundOnTouchMove);
-    this.container.addEventListener('mouseup', (e) => {
-      if (!this.isDragging) {
-        this.boundOnClick(e.clientX, e.clientY);
-      }
-      this.boundOnTouchUp(e);
-    });
-    this.container.addEventListener('touchstart', this.boundOnTouchDown);
-    this.container.addEventListener('touchmove', this.boundOnTouchMove);
+    this.boundOnDocumentMouseUp = this.onTouchUp.bind(this);
+    document.addEventListener('mouseup', this.boundOnDocumentMouseUp);
+    this.container.addEventListener('touchstart', this.boundOnTouchDown, { passive: true });
+    this.container.addEventListener('touchmove', this.boundOnTouchMove, { passive: false });
     this.container.addEventListener('touchend', this.boundOnTouchUp);
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.onResize();
+    });
+    this.resizeObserver.observe(this.container);
   }
 
   destroy() {
     window.cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this.boundOnResize);
-    window.removeEventListener('mousewheel', this.boundOnWheel);
-    window.removeEventListener('wheel', this.boundOnWheel);
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+    document.removeEventListener('mouseup', this.boundOnDocumentMouseUp);
     if (this.container) {
+      this.container.removeEventListener('wheel', this.boundOnWheel);
       this.container.removeEventListener('mousedown', this.boundOnTouchDown);
       this.container.removeEventListener('mousemove', this.boundOnTouchMove);
-      this.container.removeEventListener('mouseup', this.boundOnTouchUp);
       this.container.removeEventListener('touchstart', this.boundOnTouchDown);
       this.container.removeEventListener('touchmove', this.boundOnTouchMove);
       this.container.removeEventListener('touchend', this.boundOnTouchUp);

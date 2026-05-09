@@ -605,9 +605,9 @@ export default function HomeTwoEN() {
                   <h4>Social Media</h4>
                   <div className="home-two-contact__socials">
                     {socialIconSet.map(({ icon, label }) => (
-                      <a key={icon} href="#" aria-label={label} className="soc-icon">
+                      <button key={icon} type="button" aria-label={label} className="soc-icon">
                         {renderContactIcon(icon)}
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>

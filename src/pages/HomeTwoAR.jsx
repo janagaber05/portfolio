@@ -6,6 +6,7 @@ import LiquidEther from '../components/LiquidEther';
 import BounceCards from '../components/BounceCards';
 import TiltedCard from '../components/TiltedCard';
 import CurvedLoop from '../components/CurvedLoop';
+import MagicBento from '../components/MagicBento';
 import './HomeTwo.css';
 import Footer from '../components/Footer';
 import { supabase } from './Supabase';
@@ -114,26 +115,8 @@ export default function HomeTwoAR() {
   const startY = useRef(0);
   const [entering, setEntering] = useState(true);
 
-  // Hardcoded skills (matching your design)
-  const hardcodedSkills = [
-    { id: 1, name: 'PS', type: 'adobe' },
-    { id: 2, name: 'PR', type: 'adobe' },
-    { id: 3, name: 'AN', type: 'adobe' },
-    { id: 4, name: 'LR', type: 'adobe' },
-    { id: 5, name: 'Figma', type: 'figma' },
-    { id: 6, name: 'PS', type: 'adobe' },
-    { id: 7, name: 'Adobe Acrobat', type: 'adobe-icon' },
-    { id: 8, name: 'AE', type: 'adobe' },
-    { id: 9, name: 'AI', type: 'adobe' },
-    { id: 10, name: 'CSS', type: 'code' },
-    { id: 11, name: 'HTML', type: 'code' },
-    { id: 12, name: 'JS', type: 'code' },
-  ];
-
   // API state
   const [homeContent, setHomeContent] = useState([]);
-  const [skills] = useState(hardcodedSkills);
-  const [experience, setExperience] = useState([]);
   const [strengthCards, setStrengthCards] = useState([]);
   const [valuesCards, setValuesCards] = useState([]);
   const [growingCards, setGrowingCards] = useState([]);
@@ -188,19 +171,7 @@ export default function HomeTwoAR() {
       }
     }
 
-    // Skills are now hardcoded, no need to fetch from API
-
-    async function getAllExperienceAPI() {
-      try {
-        const res = await supabase.from("experience").select("*");
-        if (res.data) setExperience(res.data || []);
-      } catch (err) {
-        console.error("Experience API Error (AR):", err);
-      }
-    }
-
     getAllHomeContentAPI();
-    getAllExperienceAPI();
   }, []);
 
   const getContent = (key) => {
@@ -508,26 +479,42 @@ export default function HomeTwoAR() {
           </section>
 
           <section className="home-two-tabs" aria-label="ملاحظات شخصية">
-            <div className="container">
-              <h3>رحلتي كمصممة</h3>
-              <ul>
-                <li>
-                  <h4>أهدافي القادمة</h4>
-                  <p>قيادة فرق متعددة التخصصات لصنع منتجات شاملة لعلامات جريئة.</p>
-                </li>
-                <li>
-                  <h4>أسلوبي</h4>
-                  <p>ألوان جريئة، حركة سينمائية ونبرة إنسانية دائمة.</p>
-                </li>
-                <li>
-                  <h4>مصادري للإلهام</h4>
-                  <p>التصوير الفوتوغرافي، تصميم السيارات والقصص اليومية المحيطة بي.</p>
-                </li>
-                <li>
-                  <h4>تميّزي</h4>
-                  <p>مصممة وقصاصة في آن واحد—أطرح الفكرة وأختبرها وأنفذها بثقة.</p>
-                </li>
-              </ul>
+            <div className="container" dir="rtl">
+              <h3>{getContent('growing_title') || 'رحلتي كمصممة'}</h3>
+              {growingCards.length > 0 ? (
+                <MagicBento
+                  textAutoHide
+                  enableStars
+                  enableSpotlight
+                  enableBorderGlow
+                  enableTilt
+                  enableMagnetism
+                  clickEffect
+                  spotlightRadius={300}
+                  particleCount={12}
+                  glowColor="132, 0, 255"
+                  cards={growingCards}
+                />
+              ) : (
+                <ul>
+                  <li>
+                    <h4>أهدافي القادمة</h4>
+                    <p>قيادة فرق متعددة التخصصات لصنع منتجات شاملة لعلامات جريئة.</p>
+                  </li>
+                  <li>
+                    <h4>أسلوبي</h4>
+                    <p>ألوان جريئة، حركة سينمائية ونبرة إنسانية دائمة.</p>
+                  </li>
+                  <li>
+                    <h4>مصادري للإلهام</h4>
+                    <p>التصوير الفوتوغرافي، تصميم السيارات والقصص اليومية المحيطة بي.</p>
+                  </li>
+                  <li>
+                    <h4>تميّزي</h4>
+                    <p>مصممة وقصاصة في آن واحد—أطرح الفكرة وأختبرها وأنفذها بثقة.</p>
+                  </li>
+                </ul>
+              )}
             </div>
           </section>
 
@@ -578,9 +565,9 @@ export default function HomeTwoAR() {
                   <h4>وسائل التواصل</h4>
                   <div className="home-two-contact__socials">
                     {socialIconSetAr.map(({ icon, label }) => (
-                      <a key={icon} href="#" aria-label={label} className="soc-icon">
+                      <button key={icon} type="button" aria-label={label} className="soc-icon">
                         {renderContactIconAr(icon)}
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>

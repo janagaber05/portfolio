@@ -37,7 +37,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Export a function to check connection
 export const checkSupabaseConnection = async () => {
   try {
-    const { data, error } = await supabase.from('projects').select('id').limit(1);
+    const { error } = await supabase.from('projects').select('id').limit(1);
     if (error) throw error;
     return { connected: true, error: null };
   } catch (error) {

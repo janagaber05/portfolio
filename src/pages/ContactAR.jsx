@@ -421,16 +421,16 @@ export default function ContactAR() {
                   <h4 className="contact-info__subtitle">وسائل التواصل</h4>
                   <div className="contact-section__socials">
                     {socialIconSetAr.map(({ icon, label }, index) => (
-                      <a 
-                        key={icon} 
-                        href="#" 
-                        aria-label={label} 
+                      <button
+                        key={icon}
+                        type="button"
+                        aria-label={label}
                         className="soc-icon"
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         {renderContactIconAr(icon)}
                         <div className="soc-icon__glow" />
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>

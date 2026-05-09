@@ -27,7 +27,7 @@ const ProjectsExample = () => {
     setSubmitError(null);
     setSuccess(false);
 
-    const { data, error: createError } = await createProject(formData);
+    const { error: createError } = await createProject(formData);
 
     if (createError) {
       setSubmitError(createError);
@@ -52,7 +52,7 @@ const ProjectsExample = () => {
     setSubmitError(null);
     setSuccess(false);
 
-    const { data, error: updateError } = await updateProject(id, updates);
+    const { error: updateError } = await updateProject(id, updates);
 
     if (updateError) {
       setSubmitError(updateError);

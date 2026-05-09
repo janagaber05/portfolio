@@ -117,6 +117,16 @@
   color:rgba(246,236,255,0.65);
   line-height:1.6;
 }
+.blogs-section__error{
+  grid-column:1 / -1;
+  margin:0;
+  padding:14px 18px;
+  border-radius:12px;
+  background:rgba(180,80,120,0.2);
+  border:1px solid rgba(255,160,190,0.35);
+  color:#ffd6e0;
+  font-size:0.95rem;
+}
 
 .blogs-grid{
   display:grid;

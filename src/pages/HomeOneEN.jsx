@@ -19,8 +19,6 @@ export default function HomeOneEN() {
     subtitle: 'UX/UI Designer',
     paragraph: 'Creating beautiful, user-centered digital experiences that bring ideas to life.'
   });
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     async function getAllHomeContentAPI() {
       try {
@@ -76,8 +74,6 @@ export default function HomeOneEN() {
         console.error("❌ Exception caught:", err);
         console.error("Error type:", err.constructor.name);
         console.error("Error message:", err.message);
-      } finally {
-        setLoading(false);
       }
     }
     

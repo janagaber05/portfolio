@@ -98,6 +98,11 @@ export default function BlogsEN() {
             </div>
 
             <div className="blogs-grid">
+              {error && !loading ? (
+                <p className="blogs-section__error" role="alert">
+                  Could not load posts. Please try again later.
+                </p>
+              ) : null}
               {loading ? (
                 <div>Loading...</div>
               ) : recentPosts.length > 0 ? (

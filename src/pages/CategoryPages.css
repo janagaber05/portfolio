@@ -1,0 +1,169 @@
+/* Shared category work page: hero uses ProjectsGrid.css */
+
+.category-hero.projects-grid-hero {
+  padding-top: 52px;
+  padding-bottom: 36px;
+}
+
+/* —— Card grid (replaces circular gallery) —— */
+
+.cat-cards-section {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(3.5rem, 8vw, 5rem);
+}
+
+.cat-cards-section__head {
+  max-width: 40rem;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+.cat-cards-section__head .cat-cards-section__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(249, 173, 226, 0.9);
+}
+
+.cat-cards-section__head h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.65rem, 4vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f9f4ff;
+  line-height: 1.15;
+}
+
+.cat-cards-section__head p {
+  margin: 0;
+  color: rgba(246, 236, 255, 0.62);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.cat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 2.5vw, 1.35rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Photo on top (full visibility), title strip below */
+.cat-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: #14101c;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(180, 159, 255, 0.14);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.cat-card:hover,
+.cat-card:focus-visible {
+  transform: translateY(-6px);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(249, 173, 226, 0.4);
+}
+
+.cat-card:focus-visible {
+  outline: 2px solid rgba(249, 173, 226, 0.85);
+  outline-offset: 3px;
+}
+
+.cat-card__media {
+  flex: 1 1 auto;
+  min-height: 176px;
+  position: relative;
+  background: #1e1828;
+}
+
+.cat-card__media img {
+  width: 100%;
+  height: 100%;
+  min-height: 176px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transform: scale(1);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cat-card:hover .cat-card__media img,
+.cat-card:focus-visible .cat-card__media img {
+  transform: scale(1.06);
+}
+
+.cat-card__body {
+  flex: 0 0 auto;
+  padding: 1.1rem 1.25rem 1.15rem;
+  background: linear-gradient(180deg, #1f1a2e 0%, #161222 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cat-card__title {
+  margin: 0 0 0.3rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f9f4ff;
+  line-height: 1.25;
+}
+
+.cat-card__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(249, 173, 226, 0.92);
+}
+
+/* CTA band helpers */
+.muted-centered {
+  text-align: center;
+  max-width: 720px;
+  margin: 6px auto 14px;
+}
+
+.btn-wrapper-centered {
+  text-align: center;
+}
+
+.section-title-spaced {
+  margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+  .cat-card {
+    min-height: 300px;
+  }
+
+  .cat-card__media {
+    min-height: 200px;
+  }
+
+  .cat-card__media img {
+    min-height: 200px;
+  }
+
+  .cat-card__title {
+    font-size: 1.22rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .cat-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

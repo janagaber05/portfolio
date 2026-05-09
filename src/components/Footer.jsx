@@ -138,9 +138,9 @@ export default function Footer({ lang = 'en', logoSrc }) {
               <p className="footer__heading">{isAr ? 'وسائل التواصل' : 'Social Media'}</p>
               <div className="footer__socials">
                 {socials.map(({ label, icon }) => (
-                  <a key={label} href="#" aria-label={label}>
+                  <button key={label} type="button" className="footer__social-btn" aria-label={label}>
                     {renderIcon(icon)}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>

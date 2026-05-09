@@ -21,7 +21,7 @@ const ContactFormExample = () => {
     setError(null);
     setSuccess(false);
 
-    const { data, error: submitError } = await submitContact(formData);
+    const { error: submitError } = await submitContact(formData);
 
     if (submitError) {
       setError(submitError);

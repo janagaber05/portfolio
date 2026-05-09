@@ -727,6 +727,10 @@
   justify-content:center;
   font-size:18px;
   transition:transform 0.25s ease, background 0.25s ease;
+  margin:0;
+  padding:0;
+  cursor:pointer;
+  appearance:none;
 }
 .soc-icon svg{
   width:26px;

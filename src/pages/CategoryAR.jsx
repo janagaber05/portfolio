@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import CircularGallery from '../components/CircularGallery';
+import { CATEGORY_NAV_AR } from '../data/categoryNavItems';
 import { useSectionContent } from '../hooks/useHomeContent';
-import './CategoryAR.css';
+import './ProjectsGrid.css';
+import './CategoryPages.css';
+
+const CATEGORY_HERO_IMG = '/imgs/category/hero-category.png';
+const CARD_HINT = 'عرض';
 
 export default function CategoryAR() {
   const { getContent } = useSectionContent('category', 'ar');
@@ -18,44 +23,71 @@ export default function CategoryAR() {
 
   return (
     <Layout lang="ar">
-      <section className="hero hero-cover work-hero" id="top" aria-label="غلاف الأعمال">
-        <div className="hero-cover-bg" aria-hidden="true" style={{backgroundImage:"url('/imgs/category/hero-category.png')"}}></div>
-        <div className="container hero-center">
-          <div className="work-hero__content" dir="rtl">
-            <div className="work-hero__text">
-              <h1 className="hero-title">{hero.title}</h1>
-              <p className="subline subline-centered">{hero.subline}</p>
-              <p className="muted muted-centered">{hero.muted}</p>
-              <p className="btn-wrapper-centered"><a className="btn" href="#cats">استكشفي المزيد</a></p>
+      <header
+        className="projects-grid-hero projects-grid-hero--ar category-hero"
+        id="top"
+        aria-label="غلاف الأعمال"
+      >
+        <div className="container">
+          <div className="projects-grid-hero__inner">
+            <div className="projects-grid-hero__text">
+              <p className="projects-grid-hero__eyebrow">التصنيفات</p>
+              <h1 className="projects-grid-hero__title">{hero.title}</h1>
+              <p className="lead">{hero.subline}</p>
+              {hero.muted ? <p className="projects-grid-hero__sublead">{hero.muted}</p> : null}
+              <p className="projects-grid-hero__cta">
+                <a className="btn" href="#cats">
+                  استكشفي المزيد
+                </a>
+              </p>
             </div>
-            <div className="work-hero__image" aria-hidden="true">
-              <img src="/imgs/category/hero-category.png" alt="أعمالي" loading="eager" />
+            <div className="projects-grid-hero__media">
+              <img
+                src={CATEGORY_HERO_IMG}
+                alt={hero.title}
+                loading="eager"
+                decoding="async"
+              />
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section className="container cat-gallery-section" id="cats" aria-label="شبكة التصنيفات">
-        <div className="cat-gallery-wrapper">
-          <CircularGallery
-            items={[
-              { image: '/imgs/category/app-design-category.png', text: 'تصميم تطبيقات', href: '/app-design-ar' },
-              { image: '/imgs/category/web-desogn-category.png', text: 'تصميم ويب', href: '/web-design-ar' },
-              { image: '/imgs/category/graphic-design-category.png', text: 'تصميم جرافيك', href: '/graphic-design-ar' },
-              { image: '/imgs/category/coding-category.png', text: 'برمجة', href: '/404-ar' },
-              { image: '/imgs/category/blogs-category.png', text: 'المدونة', href: '/blogs-ar' },
-              { image: '/imgs/category/3d-category.png', text: '3D', href: '/404-ar' }
-            ]}
-            bend={3}
-            textColor="#ffffff"
-            borderRadius={0.05}
-            scrollEase={0.02}
-            scrollSpeed={3}
-          />
+      <section className="cat-cards-section" id="cats" aria-label="تصنيفات الأعمال">
+        <div className="container">
+          <header className="cat-cards-section__head">
+            <p className="cat-cards-section__eyebrow">تصفحي حسب النوع</p>
+            <h2>اختاري تصنيفاً</h2>
+            <p>كل بطاقة تؤدي إلى ذلك الجزء من الأعمال—تطبيقات، ويب، جرافيك، وغيرها.</p>
+          </header>
+          <ul className="cat-cards-grid">
+            {CATEGORY_NAV_AR.map((item) => (
+              <li key={item.href}>
+                <Link
+                  className="cat-card"
+                  to={item.href}
+                  aria-label={`${item.title}: ${CARD_HINT}`}
+                >
+                  <div className="cat-card__media">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="cat-card__body">
+                    <h3 className="cat-card__title">{item.title}</h3>
+                    <p className="cat-card__hint">{CARD_HINT}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="cta-band" id="contact" aria-label="دعوة للتواصل" style={{backgroundImage:"url('/imgs/us working together.png')"}}>
+      <section className="cta-band" id="contact" aria-label="دعوة للتواصل" style={{ backgroundImage: "url('/imgs/us working together.png')" }}>
         <div className="container">
           <p className="muted muted-centered">{getContent('category_cta_text') || 'تعرفي ما الذي ينقص؟'}</p>
           <h3 className="section-title centered section-title-spaced">{getContent('category_cta_title') || 'أن نعمل معاً'}</h3>
@@ -65,5 +97,3 @@ export default function CategoryAR() {
     </Layout>
   );
 }
-
-

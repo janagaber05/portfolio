@@ -4,6 +4,7 @@
   overflow: hidden;
   cursor: grab;
   position: relative;
+  touch-action: none;
 }
 
 .circular-gallery:active {
