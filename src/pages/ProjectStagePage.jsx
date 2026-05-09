@@ -4,6 +4,7 @@ import './ProjectsGrid.css';
 
 const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
 const FITUP_RESEARCH_PDF = `${publicUrl}/grad-project/FitUp_Expanded_Research-2.pdf`;
+const FITUP_BRAND_MANUAL_DOCX = `${publicUrl}/grad-project/FitUp_Brand_Manual.docx`;
 
 const STAGES = {
   research: {
@@ -207,6 +208,65 @@ export default function ProjectStagePage({ lang = 'en', stageId }) {
                 {isAr
                   ? 'إذا لم تظهر المعاينة، استخدمي «فتح في نافذة جديدة» أو «تنزيل».'
                   : 'If the preview does not load, use Open or Download—some browsers limit inline PDFs.'}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {stageId === 'branding' && (
+          <section
+            className="stage-document-section container"
+            aria-label={isAr ? 'دليل هوية FitUp' : 'FitUp brand manual document'}
+          >
+            <div className="stage-document-card">
+              <div className="stage-document-card__header">
+                <div className="stage-document-card__titles">
+                  <h2 className="stage-document-card__title">
+                    {isAr ? 'FitUp — دليل الهوية والبراند' : 'FitUp — brand manual & visual identity'}
+                  </h2>
+                  <p className="stage-document-card__meta">
+                    {isAr ? 'مستند Word · مشروع التخرج' : 'Word document · Grad project deliverable'}
+                  </p>
+                </div>
+                <div className="stage-document-card__actions">
+                  <a
+                    className="stage-doc-btn"
+                    href={FITUP_BRAND_MANUAL_DOCX}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {isAr ? 'فتح في نافذة جديدة' : 'Open in new tab'}
+                  </a>
+                  <a
+                    className="stage-doc-btn stage-doc-btn--primary"
+                    href={FITUP_BRAND_MANUAL_DOCX}
+                    download="FitUp_Brand_Manual.docx"
+                  >
+                    {isAr ? 'تنزيل' : 'Download'}
+                  </a>
+                </div>
+              </div>
+              <div className="stage-docx-panel">
+                <div className="stage-docx-panel__badge" aria-hidden="true">
+                  <span className="stage-docx-panel__ext">DOCX</span>
+                </div>
+                <div className="stage-docx-panel__copy">
+                  <p className="stage-docx-panel__lead">
+                    {isAr
+                      ? 'دليل كامل للهوية البصرية: الشعار، الألوان، الخطوط، وقواعد الاستخدام—جاهز للتحرير في Word.'
+                      : 'Full brand guidelines—logo, colour, typography, and usage rules—in an editable Word deliverable.'}
+                  </p>
+                  <p className="stage-docx-panel__note">
+                    {isAr
+                      ? 'ملفات Word تعمل بشكل أفضل بعد التنزيل (Microsoft Word أو Pages أو Google Docs).'
+                      : 'Word files work best after download (Microsoft Word, Pages, or Google Docs).'}
+                  </p>
+                </div>
+              </div>
+              <p className="stage-pdf-hint stage-pdf-hint--docx">
+                {isAr
+                  ? 'المتصفحات لا تعرض ملفات Word داخل الصفحة؛ استخدمي «فتح» أو «تنزيل» أعلاه.'
+                  : 'Browsers do not preview Word inside the page—use Open or Download above.'}
               </p>
             </div>
           </section>
