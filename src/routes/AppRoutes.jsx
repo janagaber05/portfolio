@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import HomeOneEN from '../pages/HomeOneEN';
 import HomeOneAR from '../pages/HomeOneAR';
 import HomeTwoEN from '../pages/HomeTwoEN';
@@ -21,6 +21,9 @@ import ThreeDDesignEN from '../pages/ThreeDDesignEN';
 import ThreeDDesignAR from '../pages/ThreeDDesignAR';
 import EgyAirEN from '../pages/EgyAirEN';
 import EgyAirAR from '../pages/EgyAirAR';
+import GradProjectEN from '../pages/GradProjectEN';
+import GradProjectAR from '../pages/GradProjectAR';
+import ProjectStagePage from '../pages/ProjectStagePage';
 import BlogDetailEmotionEN from '../pages/BlogDetailEmotionEN';
 import NotFoundEN from '../pages/NotFoundEN';
 import NotFoundAR from '../pages/NotFoundAR';
@@ -28,36 +31,6 @@ import TestAPI from '../pages/TestAPI';
 import SupabasePage from '../pages/SupabasePage';
 import ProjectsExample from '../components/examples/ProjectsExample';
 import ContactFormExample from '../components/examples/ContactFormExample';
-
-// List of valid/complete routes
-const VALID_ROUTES = [
-  '/',
-  '/ar',
-  '/home-two',
-  '/home-two-ar',
-  '/about',
-  '/about-ar',
-  '/blogs',
-  '/blogs-ar',
-  '/contact',
-  '/contact-ar',
-  '/category',
-  '/category-ar',
-  '/graphic-design',
-  '/graphic-design-ar',
-  '/app-design',
-  '/app-design-ar',
-  '/web-design',
-  '/web-design-ar',
-  '/3d-design',
-  '/3d-design-ar',
-  '/egy-air',
-  '/egy-air-ar',
-  '/designing-with-emotion-how-colors-shape-user-experience-ui-designer-in-cairo',
-  '/404',
-  '/404-ar'
-];
-
 
 function NotFoundRedirect() {
   const location = useLocation();
@@ -90,6 +63,26 @@ export default function AppRoutes() {
       <Route path="/3d-design-ar" element={<ThreeDDesignAR />} />
       <Route path="/egy-air" element={<EgyAirEN />} />
       <Route path="/egy-air-ar" element={<EgyAirAR />} />
+      <Route path="/grad-project" element={<GradProjectEN />} />
+      <Route path="/grad-project-ar" element={<GradProjectAR />} />
+      <Route path="/grad-project/research" element={<ProjectStagePage lang="en" stageId="research" />} />
+      <Route path="/grad-project/branding" element={<ProjectStagePage lang="en" stageId="branding" />} />
+      <Route path="/grad-project/ux-design-system" element={<ProjectStagePage lang="en" stageId="ux-design-system" />} />
+      <Route path="/grad-project/prototype" element={<ProjectStagePage lang="en" stageId="prototype" />} />
+      <Route path="/grad-project-ar/research" element={<ProjectStagePage lang="ar" stageId="research" />} />
+      <Route path="/grad-project-ar/branding" element={<ProjectStagePage lang="ar" stageId="branding" />} />
+      <Route path="/grad-project-ar/ux-design-system" element={<ProjectStagePage lang="ar" stageId="ux-design-system" />} />
+      <Route path="/grad-project-ar/prototype" element={<ProjectStagePage lang="ar" stageId="prototype" />} />
+      <Route path="/projects" element={<Navigate to="/grad-project" replace />} />
+      <Route path="/projects-ar" element={<Navigate to="/grad-project-ar" replace />} />
+      <Route path="/projects/research" element={<Navigate to="/grad-project/research" replace />} />
+      <Route path="/projects/branding" element={<Navigate to="/grad-project/branding" replace />} />
+      <Route path="/projects/ux-design-system" element={<Navigate to="/grad-project/ux-design-system" replace />} />
+      <Route path="/projects/prototype" element={<Navigate to="/grad-project/prototype" replace />} />
+      <Route path="/projects-ar/research" element={<Navigate to="/grad-project-ar/research" replace />} />
+      <Route path="/projects-ar/branding" element={<Navigate to="/grad-project-ar/branding" replace />} />
+      <Route path="/projects-ar/ux-design-system" element={<Navigate to="/grad-project-ar/ux-design-system" replace />} />
+      <Route path="/projects-ar/prototype" element={<Navigate to="/grad-project-ar/prototype" replace />} />
       <Route path="/test-api" element={<TestAPI />} />
       <Route path="/supabase" element={<SupabasePage />} />
       <Route path="/examples/projects" element={<ProjectsExample />} />
